@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- build script for cassandraCluster project-->
+<!-- author Holger Trittenbach -->
+<project name="CassandraCluster" default="jar" basedir=".">
+
+	<property name="src.dir" location="src" />
+	<property name="class.dir" location="class" />
+	<property name="dist.dir" location="dist" />
+	<property name="lib.dir" value="lib" />
+	<property name="config.dir" value="config" />
+	<property name="jar.name" value="cassandraCluster.jar" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+
+	<target name="init" description="set up folders">
+		<mkdir dir="${class.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source">
+		<javac srcdir="${src.dir}" destdir="${class.dir}" debug="true" debuglevel="source" classpathref="classpath" includeantruntime="false">
+		</javac>
+		<copy todir="${class.dir}">
+		     <fileset dir="${src.dir}" excludes="**/*.java"/>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile" description="jar">
+
+		<!-- clean up before build -->
+		<delete file="${dist.dir}/${jar.name}" />
+		<delete file="MANIFEST.MF" />
+
+		<!-- create manifest -->
+		<manifest file="MANIFEST.MF">
+			<attribute name="Class-Path" value="." />
+		</manifest>
+
+		<!-- create jar -->
+		<!-- create temporary jar to be able to exclude specific files in zipfileset because zipgroupfileset does not support exclude-->
+		<jar jarfile="${dist.dir}/temp.jar">
+			<zipgroupfileset dir="lib/">
+				<include name="**/*.jar" />
+			</zipgroupfileset>
+		</jar>
+		<!-- create executable jar of the project -->
+		<jar destfile="${dist.dir}/${jar.name}" basedir="${class.dir}" manifest="MANIFEST.MF">
+			<zipfileset src="${dist.dir}/temp.jar">
+				<exclude name="**/*.html" />
+			</zipfileset>
+		</jar>
+		
+		<!-- do some clean up-->
+		<delete file="${dist.dir}/temp.jar" />
+		<delete dir="${class.dir}" />
+		
+		<!-- copy to testproject -->
+		<copy file="${dist.dir}/${jar.name}" todir="F:\Programmieren\workspace\awsCassandraClusterTest\lib"/>	   
+			
+	</target>
+</project>
