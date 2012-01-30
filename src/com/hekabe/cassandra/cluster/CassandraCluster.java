@@ -58,37 +58,42 @@ public abstract class CassandraCluster {
 		ArrayList<CassandraInstance> instances = new ArrayList<CassandraInstance>();
 		instances.addAll(getInstances());
 		CassandraInstance instance = instances.get(0);
-		
-			TTransport tr = new TFramedTransport(new TSocket(instance.getPublicIp(),
-					9160));
-			TProtocol proto = new TBinaryProtocol(tr);
-			Cassandra.Client client = new Cassandra.Client(proto);
-			try {
-				tr.open();
-				//create keyspace
-		        String cql="CREATE KEYSPACE usertable WITH strategy_class = 'org.apache.cassandra.locator.SimpleStrategy' AND strategy_options:replication_factor = 1;";				// create usertable keyspace
-				client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
-						Compression.NONE);
-				//create column family
-				cql = "USE usertable;";
-		        client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
-		        cql = "CREATE COLUMNFAMILY data (KEY text PRIMARY KEY);";;
-		        client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
-		        
-				tr.close();
-			} catch (TTransportException e) {
-				e.printStackTrace();
-			} catch (InvalidRequestException e) {
-				e.printStackTrace();
-			} catch (UnavailableException e) {
-				e.printStackTrace();
-			} catch (TimedOutException e) {
-				e.printStackTrace();
-			} catch (SchemaDisagreementException e) {
-				e.printStackTrace();
-			} catch (TException e) {
-				e.printStackTrace();
-			}
+
+		TTransport tr = new TFramedTransport(new TSocket(
+				instance.getPublicIp(), 9160));
+		TProtocol proto = new TBinaryProtocol(tr);
+		Cassandra.Client client = new Cassandra.Client(proto);
+		try {
+			tr.open();
+			// create keyspace
+			String cql = "CREATE KEYSPACE usertable WITH strategy_class = 'org.apache.cassandra.locator.SimpleStrategy' AND strategy_options:replication_factor = 1;"; // create
+																																										// usertable
+																																										// keyspace
+			client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
+					Compression.NONE);
+			// create column family
+			cql = "USE usertable;";
+			client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
+					Compression.NONE);
+			cql = "CREATE COLUMNFAMILY data (KEY text PRIMARY KEY);";
+			;
+			client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
+					Compression.NONE);
+
+			tr.close();
+		} catch (TTransportException e) {
+			e.printStackTrace();
+		} catch (InvalidRequestException e) {
+			e.printStackTrace();
+		} catch (UnavailableException e) {
+			e.printStackTrace();
+		} catch (TimedOutException e) {
+			e.printStackTrace();
+		} catch (SchemaDisagreementException e) {
+			e.printStackTrace();
+		} catch (TException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setConfigParameter(String configParameter, String value) {
