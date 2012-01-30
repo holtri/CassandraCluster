@@ -35,7 +35,8 @@ public class YCSBWorkload {
 	final static String SCAN_PROPORTION = "scanproportion";
 	final static String INSERT_PROPORTION = "insertproportion";
 	final static String REQUEST_DISTRIBUTION = "requestdistribution";
-	
+	final static String INSERT_START = "insertstart";
+	final static String INSERT_COUNT ="insertcount";
 	private HashMap<String, String> parameters = new HashMap<String, String>();
 		
 	
@@ -49,12 +50,15 @@ public class YCSBWorkload {
 		parameters.put(OPERATION_COUNT, "1000");
 		parameters.put(WORKLOAD, "com.yahoo.ycsb.workloads.CoreWorkload");
 		parameters.put(READ_ALL_FIELDS, "true");
-		parameters.put(READ_PROPORTION, "0.5");
-		parameters.put(UPDATE_PROPORTION, "0.5");
+		parameters.put(READ_PROPORTION, "0");
+		parameters.put(UPDATE_PROPORTION, "0");
 		parameters.put(SCAN_PROPORTION, "0.5");
 		parameters.put(UPDATE_PROPORTION, "0");
-		parameters.put(INSERT_PROPORTION, "0");
+		parameters.put(INSERT_PROPORTION, "1");
 		parameters.put(REQUEST_DISTRIBUTION, "zipfian");
+		parameters.put(INSERT_START, "0");
+		parameters.put(INSERT_COUNT, "1000");
+
 	}
 	
 	public void setParameter(String key, String value){
@@ -70,17 +74,18 @@ public class YCSBWorkload {
 	 */
 	String buildParameterString(){
 		StringBuffer parameterlist = new StringBuffer();
+//		parameterlist.append("\"");
 		for(Map.Entry<String, String> entry : parameters.entrySet()){
 			parameterlist.append("-p");
 			parameterlist.append(" " + entry.getKey());
-			parameterlist.append(" " + entry.getValue());
+			parameterlist.append("=" + entry.getValue());
 			parameterlist.append(" ");
 		}
-		
+//		parameterlist.append("\"");
 		return parameterlist.toString();
 	}
 	
-	public void loadBenchmarkData(CassandraCluster cluster) throws IOException{
+	public void runBenchmark(CassandraCluster cluster, boolean load, String outputFileName, String workloadFile) throws IOException{
 		
 		//connect ssh
 		
@@ -114,13 +119,22 @@ public class YCSBWorkload {
 			}
 			hosts = hosts.substring(0, hosts.length()-1);
 			
-			String workloadfile = "workloads/workloada";
+			if(workloadFile==null){
+				workloadFile = "workloads/workloada";
+			}
 			String parameters = buildParameterString();
-			String downloadFileName = "filename";
 			
-			_log.info("touch test &");
-			out.write("touch test &\n".getBytes());
-			out.write(("runycsb.sh " + hosts + " " + workloadfile + " " + parameters + " " + downloadFileName + "\n").getBytes());
+			if(load){
+				parameters = "\"-load " +parameters + " \"";
+			}else{
+				parameters = "\"-t " + parameters + "\"";
+			}
+			
+			//_log.info("touch test &");
+			//out.write("touch test &\n".getBytes());
+			_log.info("YCSB/runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + "\n");
+			out.write("cd YCSB\n".getBytes());
+			out.write(("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + " &\n").getBytes());
 			try {
 				TimeUnit.SECONDS.sleep(3);
 			} catch (InterruptedException e) {
@@ -129,6 +143,7 @@ public class YCSBWorkload {
 			out.close();
 		}
 	}
+	
 	
 	public void runWorkload(CassandraCluster cluster){
 		
