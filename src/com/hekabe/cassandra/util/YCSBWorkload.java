@@ -37,6 +37,7 @@ public class YCSBWorkload {
 	final static String REQUEST_DISTRIBUTION = "requestdistribution";
 	final static String INSERT_START = "insertstart";
 	final static String INSERT_COUNT ="insertcount";
+	
 	private HashMap<String, String> parameters = new HashMap<String, String>();
 		
 	
@@ -130,9 +131,7 @@ public class YCSBWorkload {
 				parameters = "\"-t " + parameters + "\"";
 			}
 			
-			//_log.info("touch test &");
-			//out.write("touch test &\n".getBytes());
-			_log.info("YCSB/runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + "\n");
+			_log.info("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + "\n");
 			out.write("cd YCSB\n".getBytes());
 			out.write(("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + " &\n").getBytes());
 			try {
@@ -142,10 +141,5 @@ public class YCSBWorkload {
 			}
 			out.close();
 		}
-	}
-	
-	
-	public void runWorkload(CassandraCluster cluster){
-		
-	}
+	}	
 }
