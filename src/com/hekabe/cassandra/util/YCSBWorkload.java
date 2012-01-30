@@ -140,7 +140,7 @@ public class YCSBWorkload {
 			
 			_log.info("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + "\n");
 			out.write("cd YCSB\n".getBytes());
-			out.write(("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName + " &\n").getBytes());
+			out.write(("./runycsb.sh " + hosts + " " + workloadFile + " " + parameters + " " + outputFileName +"\n").getBytes());
 			try {
 				TimeUnit.SECONDS.sleep(3);
 			} catch (InterruptedException e) {
