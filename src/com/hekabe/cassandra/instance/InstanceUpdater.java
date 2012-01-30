@@ -67,6 +67,9 @@ public class InstanceUpdater extends Thread{
 				if (action == "decommissionNode"){
 					success = this.decommission();
 				}
+				if (action =="removeCassandra") {
+					success = this.removeCassandra();
+				}
 
 			} catch (IOException e) {
 				success = false;
@@ -95,6 +98,31 @@ public class InstanceUpdater extends Thread{
 
 	}
 
+	private boolean removeCassandra() throws IOException {
+		boolean result = false;
+		
+		SshClient sshClient = connectSSH();
+		
+		SessionChannelClient session = sshClient.openSessionChannel();
+		ChannelOutputStream out;
+
+		session.requestPseudoTerminal("gogrid", 80, 24, 0, 0, "");
+		if (session.startShell()) {
+			out = session.getOutputStream();
+			try {
+				TimeUnit.SECONDS.sleep(5);
+				out.write(("sudo ./removeCassandra.sh\n").getBytes());
+				_log.info("sudo ./removeCassandra.sh");
+				TimeUnit.SECONDS.sleep(30);
+				result = true;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				result = false;
+			}
+		}
+		return result;
+	}
+	
 	private boolean decommission() throws IOException {
 		boolean result = false;
 		SshClient sshClient = connectSSH();
