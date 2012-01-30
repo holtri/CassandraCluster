@@ -65,9 +65,16 @@ public abstract class CassandraCluster {
 			Cassandra.Client client = new Cassandra.Client(proto);
 			try {
 				tr.open();
-		        String cql="CREATE keyspace usertable WITH replication_factor = '1' AND strategy_class = 'LocalStrategy'";				// create usertable keyspace
+				//create keyspace
+		        String cql="CREATE KEYSPACE usertable WITH strategy_class = 'org.apache.cassandra.locator.SimpleStrategy' AND strategy_options:replication_factor = 1;";				// create usertable keyspace
 				client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()),
 						Compression.NONE);
+				//create column family
+				cql = "USE usertable;";
+		        client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
+		        cql = "CREATE COLUMNFAMILY data (KEY text PRIMARY KEY);";;
+		        client.execute_cql_query(ByteBuffer.wrap(cql.getBytes()), Compression.NONE);
+		        
 				tr.close();
 			} catch (TTransportException e) {
 				e.printStackTrace();
