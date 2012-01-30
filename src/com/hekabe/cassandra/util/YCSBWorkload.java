@@ -85,7 +85,14 @@ public class YCSBWorkload {
 //		parameterlist.append("\"");
 		return parameterlist.toString();
 	}
-	
+	/**
+	 * 
+	 * @param cluster cluster to be benchmarked
+	 * @param load true, if this run is to load data into the cluster
+	 * @param outputFileName filename the output will be stored in (without postfix, means no ".csv", just the name)
+	 * @param workloadFile workload file that is used for benchmark (expamle: workloads/workloadb). If null, default data workloads/workloada will be used. 
+	 * @throws IOException
+	 */
 	public void runBenchmark(CassandraCluster cluster, boolean load, String outputFileName, String workloadFile) throws IOException{
 		
 		//connect ssh
