@@ -12,7 +12,7 @@ import com.hekabe.cassandra.instance.CassandraInstance;
 import com.hekabe.cassandra.util.InitialTokens;
 import com.hekabe.cassandra.util.YamlParameters;
 
-public class CassandraMultiRegionCluster {
+public class CassandraMultiRegionCluster extends AbstractCassandraCluster{
 
 	private static Logger _log = Logger.getLogger(CassandraMultiRegionCluster.class);
 	
@@ -132,4 +132,28 @@ public class CassandraMultiRegionCluster {
 		}
 		return mrC;
 	}
+
+	@Override
+	public Collection<? extends CassandraInstance> getInstances() {
+		ArrayList<CassandraInstance> instances = new ArrayList<CassandraInstance>();
+		
+		for(CassandraCluster cluster : this.clusters){
+			for(CassandraInstance ci : cluster.getInstances()){
+				instances.add(ci);
+			}
+		}
+		
+		return instances;
+	}
+
+	@Override
+	public List<String> getPublicIps() {
+		ArrayList<String> ips = new ArrayList<String>();
+		for(CassandraInstance ci : this.getInstances()){
+			ips.add(ci.getPublicIp());
+		}
+		
+		return ips;
+	}
+
 }

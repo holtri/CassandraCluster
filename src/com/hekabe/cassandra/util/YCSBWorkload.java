@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.hekabe.cassandra.cluster.AbstractCassandraCluster;
 import com.hekabe.cassandra.cluster.CassandraCluster;
 import com.hekabe.cassandra.instance.StaticCassandraInstance;
 import com.sshtools.j2ssh.SshClient;
@@ -93,7 +94,7 @@ public class YCSBWorkload {
 	 * @param workloadFile workload file that is used for benchmark (expamle: workloads/workloadb). If null, default data workloads/workloada will be used. 
 	 * @throws IOException
 	 */
-	public void runBenchmark(CassandraCluster cluster, boolean load, String outputFileName, String workloadFile) throws IOException{
+	public void runBenchmark(AbstractCassandraCluster cluster, boolean load, String outputFileName, String workloadFile) throws IOException{
 		
 		//connect ssh
 		
